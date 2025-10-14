@@ -1,0 +1,68 @@
+.links{
+    list-style-type: none;
+}
+.links li{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    padding: 2px;
+    margin: 0;
+}
+.links li a{
+    padding: 14px 20px;
+    text-decoration: none;
+    color:white;
+    font-weight: bold;
+    transition: all .2s ease-out;
+    text-transform: uppercase;
+}
+.links li a.button{
+    background-color: white;
+    font-weight: bold;
+    color: blue;
+}
+.links li a:hover{
+    opacity: .5;
+}
+.links li a.active{
+    text-decoration: line-through;
+    text-decoration-thickness: 3px;
+    text-decoration-color: red;
+    transition: none;
+}
+
+.section{
+    position: relative;
+    overflow: hidden;
+}
+.clickbutton{
+    background-color: transparent;
+    color: rgb(89, 92, 253);
+    text-transform: uppercase;
+    font-weight: bold;
+    border: 2px solid rgb(89, 92, 253);
+    transition: all .3s ease-in;
+}
+.clickbutton:hover{
+    background-color: rgb(89, 92, 253);
+    color: white;
+}
+
+.line{
+    width: 20%;
+    border: 1px solid rgb(0, 195, 255);
+    display:inline-block;
+}
+.contents h1{
+    font-weight: bold;
+    color: rgb(0, 162, 255);
+}
+.contents-icons h1{
+    font-weight: bold;
+    color: rgb(0, 162, 255);
+    transition: all .3s ease-out;
+}
+.contents-icons h1:hover{
+    transform: scale(1.4);
+    color: white;
+}
