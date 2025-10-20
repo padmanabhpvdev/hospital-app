@@ -8,7 +8,7 @@ First, set the requirements :
 
 Clone or download the hospital app using following code:
 ```git
-git clone https://github.com/padmanabhpvdev/hospital-app
+git clone https://github.com/padmanabhpvdev/hospital-app.git
 ```
 After successful installation, head to the location :
 ```bash
