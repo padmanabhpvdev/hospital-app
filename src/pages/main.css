@@ -37,14 +37,15 @@
 }
 .clickbutton{
     background-color: transparent;
-    color: rgb(89, 92, 253);
+    color: white;
     text-transform: uppercase;
     font-weight: bold;
-    border: 2px solid rgb(89, 92, 253);
-    transition: all .3s ease-in;
+    outline: 2px solid rgb(89, 92, 253);
+    border-radius: 0 !important;
+    transition: all .2s ease-in;
 }
 .clickbutton:hover{
-    background-color: rgb(89, 92, 253);
+    background-color: rgb(89, 92, 253) !important;
     color: white;
 }
 
@@ -65,4 +66,46 @@
 .contents-icons h1:hover{
     transform: scale(1.4);
     color: white;
+}
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: #0d6efd !important;
+}
+.hover-shadow {
+  transition: all 0.3s ease;
+}
+
+.hover-shadow:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+.form , textarea{
+    border: none;
+    outline:1px solid rgba(128, 128, 128, 0.329)
+}
+textarea{
+    padding:3px 8px;
+}
+
+.selectbar{
+    width: 100%;
+    padding: 0.675em;
+    background-color: #fff;
+    cursor: pointer;
+    border: 1px solid grey;
+}
+.custominput input[type="text"], .custominput input[type="date"],.custominput input[type="email"]{
+    width: 100%;
+    padding: 0.675em;
+}
+
+@media screen and (max-width:992px) {
+    .scrollable{
+        overflow-x: scroll;
+        min-height: 100px;
+        scrollbar-width: thin;
+    }
 }

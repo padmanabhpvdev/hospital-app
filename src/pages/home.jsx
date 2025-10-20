@@ -46,7 +46,7 @@ function Home(){
                 <div className="hero-content text-center text-white">
                     <h1 className="hero-title fs-1 fw-bold" data-aos='fade-up'>Welcome to Our Hospital</h1>
                     <p className="hero-subtitle fs-5" data-aos='fade-up' data-aos-delay="200">Quality Healthcare for You and Your Family</p>
-                    <button className="clickbutton" data-aos='fade-up' data-aos-delay="300">Book an Appointment</button>
+                    <a role='' className="btn clickbutton" data-aos='fade-up' data-aos-delay="300" href='/appointment'>Book an Appointment</a>
                 </div>
             </div><br />
             <section className="container-fluid">
@@ -58,7 +58,7 @@ function Home(){
                         <h1 className='py-3'>About Us</h1>
                         <div className="line"></div>
                         <p className="py-4" style={{textAlign:"justify",fontSize:'1.09em'}}>Welcome to Hospital , where we combine advanced medical technology with compassionate care to provide you and your family with exceptional health services. Our team of dedicated specialists is committed to your well-being, offering personalized treatment in a state-of-the-art healing environment.</p>
-                        <a href="/about" className="btn btn-primary justify-content-center">Learn More</a>
+                        <a href="/aboutus" className="btn btn-primary justify-content-center">Learn More</a>
                     </div>
                 </div>
             </section>
@@ -73,7 +73,7 @@ function Home(){
                         <strong>HAPPY PATIENTS</strong>
                     </div>
                     <div class="col-md p-3" data-aos="fade-up" data-aos-delay="300">
-                        <h1><CountUp duration={10} end={120} separator=''/></h1>
+                        <h1><CountUp duration={10} end={120} separator=''/>+</h1>
                         <strong>CERTIFICATES</strong>
                     </div>
                     <div class="col-md p-3" data-aos="fade-up" data-aos-delay="400">
@@ -95,8 +95,7 @@ function Home(){
                     display:'flex',
                     alignItems:'center',
                     justifyContent:'center'
-                }}
-            >
+                }}>
                 <div className="container mt-5">
                     <h1 className="text-white fs-1 fw-bold" data-aos="fade-up">Our Services</h1>
                     <div className="line" data-aos="fade-up"></div>
@@ -127,11 +126,17 @@ function Home(){
                         </div>
                     </div>
                     <div className="py-5 text-center">
-                        <a href="" className="btn btn-primary text-uppercase fw-bold" data-aos="fade-up">Explore our Doctors</a>
+                        <a href="/doctors" className="btn btn-primary text-uppercase fw-bold" data-aos="fade-up">Explore our Doctors</a>
                     </div>
                 </div>
             </div>
-            <hr />
+            <div className="container-fluid">
+                <div className="text-center contents">
+                    <h1 className='py-3'>Testimonials</h1>
+                    <div className="line mb-5"></div>
+                    <p className="fw-bold">Look what our Patients were saying...</p>
+                </div>
+            </div>
         </div>
     )
 }

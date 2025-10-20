@@ -12,11 +12,11 @@ function OffCanvasMenu({ show, handleClose}){
                 </Offcanvas.Header>
                 <Offcanvas.Body className="d-lg-none d-block d-md-block">
                     <ul className="links">
-                        <li><NavLink to='/'>Home</NavLink></li>
-                        <li><NavLink to='/doctors'>Doctors</NavLink></li>
-                        <li><NavLink to='/about'>About Us</NavLink></li>
-                        <li><NavLink to='/contact'>Contact</NavLink></li>
-                        <li><a href="" className="button">Book an Appointment</a></li>
+                        <li><NavLink to='/' className={({ isActive }) => isActive ? 'active' : ''}>Home</NavLink></li>
+                        <li><NavLink to='/doctors' className={({ isActive }) => isActive ? 'active' : ''}>Doctors</NavLink></li>
+                        <li><NavLink to='/aboutus' className={({ isActive }) => isActive ? 'active' : ''}>About Us</NavLink></li>
+                        <li><NavLink to='/contact' className={({ isActive }) => isActive ? 'active' : ''}>Contact</NavLink></li>
+                        <li><NavLink to="/appointment"  className={({ isActive }) => isActive ? 'button active' : 'button'}>Book an Appointment</NavLink></li>
                     </ul>
                 </Offcanvas.Body>
             </Offcanvas>
