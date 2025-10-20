@@ -26,6 +26,7 @@ npm run dev
 > You also need to run nodejs for backend functionality.You need to open another terminal on same location and run the following code:
 > ```bash
 > cd backend
+> npm i
 > node server.js
 > ```
 
