@@ -102,7 +102,10 @@ function Appointment(){
                 });
                 setFilteredDoctors([]);
              }else{
-                 throw new Error(result.message || "Failed to book appointment");
+                 if(result.errors && Array.isArray(result.errors)){
+                    const errorMessages=result.errors.join(', ');
+                    showNotification(`Please fix the following: ${errorMessages}`, "error");
+                 }else{showNotification(result.message || "Failed to book appointment. Please try again.", "error");}
              }   
         }catch(error){
             console.error("Error submitting form:", error);
@@ -123,16 +126,16 @@ function Appointment(){
                 <div className="container p-3">
                     <div className="row mb-3 gy-3 custominput">
                         <div className="col-md-6">
-                            <input type="text" name="fullName" id="" onChange={handleInputChange} placeholder="Enter Full Name" required/>
+                            <input type="text" name="fullName" id="" value={formData.fullName} onChange={handleInputChange} placeholder="Enter Full Name" required/>
                         </div>
                         <div className="col-md-6">
-                            <input type="email" name="email" id="" onChange={handleInputChange} placeholder="Enter Email" required/>
+                            <input type="email" name="email" id="" value={formData.email} onChange={handleInputChange} placeholder="Enter Email" required/>
                         </div>
                         <div className="col-md-6">
-                            <input type="text" name="phone" id="" onChange={handleInputChange} placeholder="Enter Phone Number" required/>
+                            <input type="text" name="phone" id="" value={formData.phone} onChange={handleInputChange} placeholder="Enter Phone Number" required/>
                         </div>
                         <div className="col-md-6">
-                            <input type="date" name="appointmentDate" id="" onChange={handleInputChange} placeholder="Choose Appointment Date" required/>
+                            <input type="date" name="appointmentDate" id="" value={formData.appointmentDate} onChange={handleInputChange} placeholder="Choose Appointment Date" required/>
                         </div>
                         <div className="col-md-6">
                             <select className="selectbar" name="department" id="" value={formData.department} onChange={handleDepartmentChange}>
