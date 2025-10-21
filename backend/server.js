@@ -19,6 +19,61 @@ let adminUsers = [
   { id: 1, name: "Admin User", email: "admin@hospital.com" }
 ];
 
+// Validation functions
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const validatePhone = (phone) => {
+  const phoneRegex = /^[0-9]{10}$/;
+  return phoneRegex.test(phone.replace(/\D/g, ''));
+};
+
+const validateDate = (date) => {
+  const inputDate = new Date(date);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return inputDate >= today;
+};
+
+const validateRequiredFields = (data) => {
+  const errors = [];
+
+  // Check for empty fields
+  if (!data.patientName?.trim()) {
+    errors.push('Patient name is required');
+  }
+
+  if (!data.email?.trim()) {
+    errors.push('Email is required');
+  } else if (!validateEmail(data.email)) {
+    errors.push('Please enter a valid email address');
+  }
+
+  if (!data.phone?.trim()) {
+    errors.push('Phone number is required');
+  } else if (!validatePhone(data.phone)) {
+    errors.push('Please enter a valid 10-digit phone number');
+  }
+
+  if (!data.appointmentDate) {
+    errors.push('Appointment date is required');
+  } else if (!validateDate(data.appointmentDate)) {
+    errors.push('Appointment date cannot be in the past');
+  }
+
+  if (!data.department?.trim()) {
+    errors.push('Department is required');
+  }
+
+  if (!data.doctorName?.trim()) {
+    errors.push('Doctor selection is required');
+  }
+
+  return errors;
+};
+
 const createTransporter = () => {
   return nodemailer.createTransport({
     service: 'gmail',
@@ -136,6 +191,33 @@ app.post('/api/appointments', async (req, res) => {
   try {
     const { patientName, email, phone, appointmentDate, department, doctorName, message } = req.body;
 
+    // Validate all required fields
+    const validationErrors = validateRequiredFields({
+      patientName,
+      email,
+      phone,
+      appointmentDate,
+      department,
+      doctorName
+    });
+
+    if (validationErrors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: validationErrors
+      });
+    }
+
+    // Additional validation: Check if doctor exists in the selected department
+    const selectedDoctor = doctors.find(d => d.name === doctorName && d.department === department);
+    if (!selectedDoctor) {
+      return res.status(400).json({
+        success: false,
+        message: 'Selected doctor is not available in the chosen department'
+      });
+    }
+
     // Generate appointment ID
     const appointmentId = `APT-${Date.now()}`;
     
@@ -145,14 +227,14 @@ app.post('/api/appointments', async (req, res) => {
 
     const appointment = {
       id: appointmentId,
-      patientName,
-      patientEmail: email,
-      patientPhone: phone,
+      patientName: patientName.trim(),
+      patientEmail: email.trim(),
+      patientPhone: phone.trim(),
       appointmentDate: new Date(appointmentDate),
-      department,
-      doctorName,
+      department: department.trim(),
+      doctorName: doctorName.trim(),
       timeSlot,
-      message,
+      message: message?.trim() || '',
       status: 'confirmed',
       createdAt: new Date(),
       reminderSent: false
@@ -160,28 +242,37 @@ app.post('/api/appointments', async (req, res) => {
 
     appointments.push(appointment);
 
-    await sendEmail(
-      email,
-      'Appointment Confirmation - Hospital',
-      emailTemplates.confirmation(appointment)
-    );
-
-    for (const admin of adminUsers) {
+    // Send emails (wrap in try-catch to not block appointment creation if email fails)
+    try {
       await sendEmail(
-        admin.email,
-        'New Appointment Booking',
-        emailTemplates.adminNotification(appointment)
+        email,
+        'Appointment Confirmation - Hospital',
+        emailTemplates.confirmation(appointment)
       );
+
+      for (const admin of adminUsers) {
+        await sendEmail(
+          admin.email,
+          'New Appointment Booking',
+          emailTemplates.adminNotification(appointment)
+        );
+      }
+
+      const doctor = doctors.find(d => d.name === doctorName);
+      if (doctor && doctor.email) {
+        await sendEmail(
+          doctor.email,
+          'New Appointment Scheduled',
+          emailTemplates.adminNotification(appointment)
+        );
+      }
+    } catch (emailError) {
+      console.error('Email sending failed, but appointment was created:', emailError);
     }
 
+    // Update doctor's schedule
     const doctor = doctors.find(d => d.name === doctorName);
     if (doctor) {
-      await sendEmail(
-        doctor.email,
-        'New Appointment Scheduled',
-        emailTemplates.adminNotification(appointment)
-      );
-      
       if (!doctor.schedule) {
         doctor.schedule = [];
       }
@@ -205,7 +296,8 @@ app.post('/api/appointments', async (req, res) => {
     console.error('Appointment error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to book appointment'
+      message: 'Failed to book appointment',
+      error: error.message
     });
   }
 });
@@ -233,6 +325,24 @@ app.get('/api/doctors', (req, res) => {
   res.json({
     success: true,
     data: doctors
+  });
+});
+
+// Get available departments
+app.get('/api/departments', (req, res) => {
+  res.json({
+    success: true,
+    data: Departments
+  });
+});
+
+// Get doctors by department
+app.get('/api/departments/:department/doctors', (req, res) => {
+  const { department } = req.params;
+  const departmentDoctors = doctors.filter(doctor => doctor.department === department);
+  res.json({
+    success: true,
+    data: departmentDoctors
   });
 });
 
@@ -282,12 +392,16 @@ cron.schedule('0 9 * * *', async () => {
   });
   
   for (const appointment of tomorrowAppointments) {
-    await sendEmail(
-      appointment.patientEmail,
-      'Appointment Reminder - Hospital',
-      emailTemplates.reminder(appointment)
-    );
-    appointment.reminderSent = true;
+    try {
+      await sendEmail(
+        appointment.patientEmail,
+        'Appointment Reminder - Hospital',
+        emailTemplates.reminder(appointment)
+      );
+      appointment.reminderSent = true;
+    } catch (error) {
+      console.error('Failed to send reminder email:', error);
+    }
   }
   
   console.log(`📧 Sent ${tomorrowAppointments.length} reminder emails`);
@@ -302,6 +416,8 @@ app.get('/api/health', (req, res) => {
       'POST /api/appointments': 'Book new appointment',
       'GET /api/appointments': 'Get all appointments (Admin)',
       'GET /api/doctors': 'Get all doctors',
+      'GET /api/departments': 'Get all departments',
+      'GET /api/departments/:department/doctors': 'Get doctors by department',
       'GET /api/admin/stats': 'Admin dashboard statistics'
     }
   });
